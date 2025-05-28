@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Resultados | PrediVersa{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-xl shadow-md p-8 max-w-4xl mx-auto">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Resultados de Diagnóstico</h2>
+    
+    <!-- Tarjeta de Resultado -->
+    <div class="border-l-4 {% if nivel_riesgo == 'Alto riesgo' %}border-red-500 bg-red-50
+                          {% elif nivel_riesgo == 'Riesgo moderado' %}border-yellow-500 bg-yellow-50
+                          {% else %}border-green-500 bg-green-50{% endif %} p-4 rounded-lg mb-8">
+        <div class="flex justify-between items-start">
+            <div>
+                <h3 class="text-lg font-medium text-gray-800">Nivel de riesgo:</h3>
+                <p class="text-2xl font-bold {% if nivel_riesgo == 'Alto riesgo' %}text-red-600
+                                          {% elif nivel_riesgo == 'Riesgo moderado' %}text-yellow-600
+                                          {% else %}text-green-600{% endif %} mt-1">
+                    {{ nivel_riesgo }}
+                </p>
+            </div>
+            <div class="bg-white px-3 py-1 rounded-full text-sm font-medium shadow">
+                Puntaje: <span class="font-bold">{{ puntaje }}/30</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recomendaciones -->
+    <div class="mb-8">
+        <h3 class="text-xl font-semibold text-purple-700 mb-4 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Recomendaciones
+        </h3>
+        
+        {% if nivel_riesgo == 'Alto riesgo' %}
+        <div class="bg-red-50 p-4 rounded-lg">
+            <ul class="list-disc pl-5 space-y-2 text-gray-700">
+                <li class="font-medium">Contactar inmediatamente al orientador escolar</li>
+                <li>Solicitar cita urgente con el departamento de psicología</li>
+                <li>Revisar el protocolo anti-bullying de la institución</li>
+                <li>Evitar situaciones de riesgo</li>
+            </ul>
+            <a href="#" class="inline-block mt-3 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors">
+                Solicitar ayuda inmediata
+            </a>
+        </div>
+        {% elif nivel_riesgo == 'Riesgo moderado' %}
+        <div class="bg-yellow-50 p-4 rounded-lg">
+            <ul class="list-disc pl-5 space-y-2 text-gray-700">
+                <li class="font-medium">Monitorear conductas durante 2 semanas</li>
+                <li>Asistir a talleres de convivencia escolar</li>
+                <li>Hablar con un tutor sobre tus preocupaciones</li>
+                <li>Registrar incidentes en un diario</li>
+            </ul>
+        </div>
+        {% else %}
+        <div class="bg-green-50 p-4 rounded-lg">
+            <p class="text-gray-700 mb-3">✅ Tu perfil muestra bajo riesgo de bullying.</p>
+            <ul class="list-disc pl-5 space-y-2 text-gray-700">
+                <li>Continúa participando en actividades de prevención</li>
+                <li>Mantén una comunicación abierta con tus profesores</li>
+                <li>Reporta cualquier situación sospechosa</li>
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Gráfico -->
+    <div class="bg-gray-50 p-4 rounded-lg">
+        <h3 class="text-lg font-medium text-gray-800 mb-4">Visualización de riesgo</h3>
+        <canvas id="graficoRiesgo" height="120"></canvas>
+    </div>
+
+    <!-- Botón de regreso -->
+    <div class="mt-8 text-center">
+        <a href="{{ url_for('dashboard') }}" class="inline-flex items-center text-purple-600 hover:text-purple-800 font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+            Volver al dashboard
+        </a>
+    </div>
+</div>
+
+<!-- Script para gráfico -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('graficoRiesgo').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Tu puntaje de riesgo'],
+                datasets: [{
+                    label: '{{ nivel_riesgo }}',
+                    data: [{{ puntaje }}],
+                    backgroundColor: [
+                        '{% if nivel_riesgo == "Alto riesgo" %}rgba(239, 68, 68, 0.7){% elif nivel_riesgo == "Riesgo moderado" %}rgba(234, 179, 8, 0.7){% else %}rgba(34, 197, 94, 0.7){% endif %}'
+                    ],
+                    borderColor: [
+                        '{% if nivel_riesgo == "Alto riesgo" %}rgb(239, 68, 68){% elif nivel_riesgo == "Riesgo moderado" %}rgb(234, 179, 8){% else %}rgb(34, 197, 94){% endif %}'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 30,
+                        ticks: {
+                            stepSize: 5
+                        },
+                        grid: {
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

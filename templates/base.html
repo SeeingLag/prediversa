@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PrediVersa{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body class="bg-gradient-to-r from-blue-100 to-purple-100 min-h-screen">
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-6 {% block header_class %}{% endblock %}">
+            <a href="{% if 'usuario' in session %}{{ url_for('dashboard') }}{% else %}{{ url_for('login') }}{% endif %}" 
+               class="text-2xl md:text-3xl font-bold text-center text-purple-800 hover:text-purple-600 block">
+                <span class="text-blue-600">Predi</span>Versa
+            </a>
+            {% block header_subtitle %}
+            <p class="text-center text-gray-600 mt-2">
+                Plataforma de prevención temprana de bullying escolar
+            </p>
+            {% endblock %}
+        </div>
+    </header>
+
+    <!-- Mensajes flash temporizados -->
+    <div class="container mx-auto px-4 mt-4"
+         x-data="{ showMessages: true }"
+         x-init="setTimeout(() => showMessages = false, 3000)"
+         x-show="showMessages"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:leave="transition ease-in duration-500">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="p-4 rounded-lg mb-4 {% if category == 'success' %}bg-green-100 text-green-800{% elif category == 'warning' %}bg-yellow-100 text-yellow-800{% else %}bg-red-100 text-red-800{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <main class="container mx-auto px-4 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-white py-6 mt-8">
+        <div class="container mx-auto px-4 text-center text-gray-500">
+            <p>© 2025 PrediVersa - Proyecto de Grado</p>
+        </div>
+    </footer>
+</body>
+</html>

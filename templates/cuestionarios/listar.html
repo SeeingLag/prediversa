@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-white rounded-xl shadow-md p-8">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Cuestionarios Disponibles</h2>
+    
+    <div class="space-y-4">
+        {% for cuestionario in cuestionarios %}
+        <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+            <h3 class="text-lg font-medium text-purple-700">{{ cuestionario.titulo }}</h3>
+            <p class="text-gray-600 mt-2">{{ cuestionario.descripcion }}</p>
+            <a href="{{ url_for('responder_cuestionario', id=cuestionario.id) }}" 
+               class="mt-4 inline-block bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700">
+                Comenzar
+            </a>
+        </div>
+        {% else %}
+        <p class="text-gray-500">No hay cuestionarios disponibles actualmente.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
