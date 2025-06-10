@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+<a href="{{ url_for('logout') }}" class="text-sm text-gray-600 hover:text-purple-600">Cerrar sesión</a>
+<a href="{{ url_for('listar_cuestionarios') }}">Ver cuestionarios</a>
+
+
 {% block header_class %}flex justify-between items-center{% endblock %}
 
 {% block header_subtitle %}
